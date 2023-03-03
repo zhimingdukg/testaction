@@ -73,5 +73,6 @@ jobs:
           body:  output.log
           from: ${{ secrets.EMAIL_FROM }}
           to: ${{ secrets.EMAIL_RECIVER }}
+          title: "test"
           is-tls: false
           commit-message: true
