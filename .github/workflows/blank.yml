@@ -13,6 +13,7 @@ on:
       - main
 
 jobs:
+
   build:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
@@ -44,7 +45,8 @@ jobs:
         run: |
           echo "One or more files in the docs folder has changed."
           echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_files }}"
-      
+          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_files }}" > output.log
+ 
       # Example 3
       - name: Get changed js files excluding the docs folder
         id: changed-files-excluded
@@ -59,3 +61,17 @@ jobs:
         run: |
           echo "One or more js files not in the doc folder has changed."
           echo "List all the files that have changed: ${{ steps.changed-files-excluded.outputs.all_changed_files }}"
+
+      - name: Send email
+        uses: AlexisMateo/sendmail-action@5
+        with:
+          smtp-server: ${{ secrets.SMTP_SERVER }}
+          smtp-server-port: ${{ secrets.SMTP_SERVER_PORT }}
+          auth-user: ${{ secrets.AUTH_USER }}
+          auth-password: ${{secrets.EMAIL_PASSWORD }}
+          subject: "file changed"
+          body:  output.log
+          from: ${{ secrets.EMAIL_FROM }}
+          to: ${{ secrets.EMAIL_RECIVER }}
+          is-tls: false
+          commit-message: true
