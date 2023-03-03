@@ -63,16 +63,50 @@ jobs:
           echo "List all the files that have changed: ${{ steps.changed-files-excluded.outputs.all_changed_files }}"
 
       - name: Send email
-        uses: AlexisMateo/sendmail-action@5
+        uses: dawidd6/action-send-mail@v3
         with:
-          smtp-server: ${{ secrets.SMTP_SERVER }}
-          smtp-server-port: ${{ secrets.SMTP_SERVER_PORT }}
-          auth-user: ${{ secrets.AUTH_USER }}
-          auth-password: ${{secrets.EMAIL_PASSWORD }}
-          subject: "file changed"
-          body:  output.log
-          from: ${{ secrets.EMAIL_FROM }}
-          to: ${{ secrets.EMAIL_RECIVER }}
-          title: "test"
-          is-tls: false
-          commit-message: true
+          # Specify connection via URL (replaces server_address, server_port, secure,
+          # username and password)
+          #
+          # Format:
+          #
+          #  * smtp://user:password@server:port
+          #  * smtp+starttls://user:password@server:port
+          connection_url: ${{secrets.MAIL_CONNECTION}}
+          # Required mail server address if not connection_url:
+          server_address: smtp.gmail.com
+          # Server port, default 25:
+          server_port: 465
+          # Optional whether this connection use TLS (default is true if server_port is 465)
+          secure: true
+          # Optional (recommended) mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # Required mail subject:
+          subject: Github Actions job result - test
+          # Required recipients' addresses:
+          to: zhiming.dai@ukg.com
+          # Required sender full name (address can be skipped):
+          from: shptxc # <user@example.com>
+          # Optional plain body:
+          body: output.log
+          # Optional HTML body read from file:
+          #html_body: file://README.html
+          # Optional carbon copy recipients:
+          #cc: kyloren@example.com,leia@example.com
+          # Optional blind carbon copy recipients:
+          #bcc: r2d2@example.com,hansolo@example.com
+          # Optional recipient of the email response:
+          #reply_to: luke@example.com
+          # Optional Message ID this message is replying to:
+          #in_reply_to: <random-luke@example.com>
+          # Optional unsigned/invalid certificates allowance:
+          ignore_cert: true
+          # Optional converting Markdown to HTML (set content_type to text/html too):
+          #convert_markdown: true
+          # Optional attachments:
+          #attachments: attachments.zip,git.diff,./dist/static/*.js
+          attachments: output.log
+          # Optional priority: 'high', 'normal' (default) or 'low'
+          priority: low
